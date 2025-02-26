@@ -1,2 +1,12 @@
 vendor
 .env
+/.idea/.gitignore
+/.idea/dataSources.xml
+/.idea/DdevIntegration.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/php.xml
+/.idea/php-docker-settings.xml
+/.idea/remote-mappings.xml
+/.idea/rennes-ville-et-metropole-script-indexation-moteur-de-recherche.iml
+/.idea/vcs.xml
