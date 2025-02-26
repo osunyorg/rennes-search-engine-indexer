@@ -76,7 +76,7 @@ class Indexation
         $items = scandir($dir);
 
         foreach ($items as $item) {
-            if ($item != "." && $item != "..") {
+            if ($item !== "." && $item !== "..") {
                 $path = $dir . DIRECTORY_SEPARATOR . $item;
 
                 if (is_dir($path)) {
