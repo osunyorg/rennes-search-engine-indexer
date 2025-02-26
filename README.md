@@ -2,7 +2,7 @@
 
 This repository is part of the Rennes Métropole Osuny project. It is intended to be included as a submodule dependency
 on the various Rennes Métropole Osuny Github repositories. It provides a way to trigger Elasticsearch indexing of Osuny
-content via a Github action.
+Frontmatter content via a Github action.
 
 ## Project technologies
 
