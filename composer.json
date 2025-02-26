@@ -1,0 +1,21 @@
+{
+    "name": "rennes/scripts",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^7.9",
+        "symfony/dotenv": "^7.2",
+        "spatie/yaml-front-matter": "^2.1",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rennes\\Scripts\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ECEDI",
+            "email": "dev@ecedi.fr"
+        }
+    ]
+}
