@@ -1,8 +1,8 @@
 # Rennes Metropole - Search engine indexer PHP script
 
-That repository is part of the Rennes Metropole Osuny project.
-It is intended to be included as a submodule dependency on the various Rennes Metropole Osuny Github repositories.
-It provides a mean to trigger Elasticsearch indexation of Osuny contentes through a Github action.
+This repository is part of the Rennes Métropole Osuny project. It is intended to be included as a submodule dependency
+on the various Rennes Métropole Osuny Github repositories. It provides a way to trigger Elasticsearch indexing of Osuny
+content via a Github action.
 
 ## Project technologies
 
