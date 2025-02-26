@@ -1,22 +1,27 @@
 {
-    "name": "rennes/scripts",
-    "type": "library",
-    "require": {
-        "php": ">=8.3",
-        "guzzlehttp/guzzle": "^7.9",
-        "symfony/dotenv": "^7.2",
-        "spatie/yaml-front-matter": "^2.1",
-        "ext-json": "*"
-    },
-    "autoload": {
-        "psr-4": {
-            "Rennes\\Scripts\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "ECEDI",
-            "email": "dev@ecedi.fr"
-        }
+  "name": "rennes/scripts",
+  "type": "library",
+  "require": {
+    "php": ">=8.3",
+    "guzzlehttp/guzzle": "^7.9",
+    "symfony/dotenv": "^7.2",
+    "spatie/yaml-front-matter": "^2.1",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Rennes\\Scripts\\": "src/"
+    }
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "@php -r \"file_exists('.env') || copy('.env.dist', '.env');\""
     ]
+  },
+  "authors": [
+    {
+      "name": "ECEDI",
+      "email": "dev@ecedi.fr"
+    }
+  ]
 }
