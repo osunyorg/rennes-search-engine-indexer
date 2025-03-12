@@ -25,7 +25,8 @@ class Indexation
             die("❌ Error: One or more environment variables are missing.\n");
         }
 
-        $this->config = Yaml::parseFile('../../config/production/config.yaml');
+        $projectRoot = getcwd();
+        $this->config = Yaml::parseFile($projectRoot . '/config/production/config.yaml');
         $this->client = new Client([
             'base_uri' => $apiUrl
         ]);
@@ -64,7 +65,8 @@ class Indexation
     public function getDocuments()
     {
         $documents = [];
-        $data = $this->getData('../../content/fr/pages');
+        $projectRoot = getcwd();
+        $data = $this->getData($projectRoot . '/content/fr/pages');
 
         /** @var Document $item */
         foreach ($data as $item) {
