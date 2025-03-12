@@ -15,34 +15,56 @@ class Indexation
     protected array $config;
 
     protected array $header;
+
     public function __construct()
     {
-        $this->config = Yaml::parseFile('../config/production/config.yaml');
+        $apiUrl = getenv('API_URL');
+        $apiKey = getenv('API_KEY');
+
+        if (!$apiUrl || !$apiKey ) {
+            die("❌ Error: One or more environment variables are missing.\n");
+        }
+
+        $this->config = Yaml::parseFile('../../config/production/config.yaml');
         $this->client = new Client([
-            'base_uri' => $_ENV['API_URL']
+            'base_uri' => $apiUrl
         ]);
 
         $this->header = [
             'Content-Type' => 'application/json',
-            'X-api-key' => $_ENV['API_KEY'],
+            'X-api-key' => $apiKey,
         ];
     }
 
     public function run()
     {
         $documents = $this->getDocuments();
+        $totalDocs = count($documents);
+        if (0 === $totalDocs) {
+            echo "⚠️ No documents to index.\n";
+            return;
+        }
 
-        $this->client->post('search/index/' . $this->config['osuny']['website']['id'], [
-            RequestOptions::HEADERS => $this->header,
-            RequestOptions::BODY => json_encode($documents),
-        ]);
+        try {
+            $response = $this->client->post('/api/v1/search/index/' . $this->config['osuny']['website']['id'], [
+                RequestOptions::HEADERS => $this->header,
+                RequestOptions::BODY => json_encode($documents),
+            ]);
+
+            echo "✅ Success: code {$response->getStatusCode()} ! Total of {$totalDocs} documents indexed". "\n";
+
+        } catch (RequestException $e) {
+            echo '❌ Error while indexing: ' . $e->getMessage() . "\n";
+            if ($e->hasResponse()) {
+                echo '📡 API Response : ' . $e->getResponse()->getBody() . "\n";
+            }
+        }
     }
 
     public function getDocuments()
     {
         $documents = [];
-        $data = $this->getData($_ENV['CONTENT_DIR']);
-        $config = Yaml::parseFile('../config/production/config.yaml');
+        $data = $this->getData('../../content/fr/pages');
 
         /** @var Document $item */
         foreach ($data as $item) {
@@ -51,7 +73,7 @@ class Indexation
             $category = '';
             if (!empty($taxonomies)) {
                 foreach ($taxonomies as $taxonomy) {
-                    if (!empty($taxonomy['categories']) && $taxonomy['name'] === 'Types de contenus') {
+                    if (!empty($taxonomy['categories']) && $taxonomy['slug'] === 'types-de-contenus') {
                         $category = $taxonomy['categories'][0]['name'];
                     }
                 }
@@ -59,13 +81,14 @@ class Indexation
 
             $documents[] = [
                 'sourceId' => $search['id'],
-                'sourceUrl' => $config['baseURL'] . $search['url'],
+                'sourceUrl' => $this->config['baseURL'] . $search['url'],
                 'title' => $search['title'],
                 'identifier' => $search['id'],
                 'summary' => $search['summary'],
                 'body' => $search['body'],
                 'category' => $category,
             ];
+            echo "Indexing document: {$search['title']} ({$search['id']})\n";
         }
 
         return $documents;
