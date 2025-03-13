@@ -20,6 +20,7 @@ class Indexation
     {
         $apiUrl = getenv('API_URL');
         $apiKey = getenv('API_KEY');
+        $apiBasicAuth = getenv('API_BASIC_AUTH') ?: null;
 
         if (!$apiUrl || !$apiKey ) {
             die("❌ Error: One or more environment variables are missing.\n");
@@ -31,10 +32,10 @@ class Indexation
             'base_uri' => $apiUrl
         ]);
 
-        $this->header = [
+        $this->header = array_merge([
             'Content-Type' => 'application/json',
-            'X-api-key' => $apiKey,
-        ];
+            'X-api-key'    => $apiKey,
+        ], $apiBasicAuth ? ['Authorization' => 'Basic ' . $apiBasicAuth] : []);
     }
 
     public function run()
