@@ -76,8 +76,8 @@ class Indexation
             $category = '';
             if (!empty($taxonomies)) {
                 foreach ($taxonomies as $taxonomy) {
-                    if (!empty($taxonomy['categories']) && $taxonomy['slug'] === 'types-de-contenus') {
-                        $category = $taxonomy['categories'][0]['name'];
+                    if (!empty($taxonomy['categories']) && $taxonomy['slug'] === 'rubrique') {
+                        $category = ucfirst($taxonomy['categories'][0]['name']);
                     }
                 }
             }
