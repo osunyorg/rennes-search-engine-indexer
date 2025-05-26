@@ -83,15 +83,15 @@ class Indexation
             }
 
             $documents[] = [
-                'sourceId' => $search['id'],
+                'sourceId' => $search['about_id'],
                 'sourceUrl' => $this->config['baseURL'] . $search['url'],
                 'title' => $search['title'],
-                'identifier' => $search['id'],
+                'identifier' => $search['about_id'],
                 'summary' => strip_tags($search['summary']),
                 'body' => strip_tags($search['body']),
                 'category' => $category,
             ];
-            echo "Indexing document: {$search['title']} ({$search['id']})\n";
+            echo "Indexing document: {$search['title']} ({$search['about_id']})\n";
         }
 
         return $documents;
