@@ -29,7 +29,7 @@ The project architecture is documented in a PlantUML diagram located in the `doc
 shows the main components of the application, their relationships, and the API interactions.
 
 ```plantuml
-:::include{file=doc/architecture.puml}
+::include{file=doc/architecture.puml}
 ```
 
 ## Local development requirements

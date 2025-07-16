@@ -1,9 +1,11 @@
 @startuml
 
 skin rose
+
 skinparam package {
     BackgroundColor white
 }
+
 skinparam componentStyle rectangle
 skinparam backgroundColor white
 skinparam defaultTextAlignment center
