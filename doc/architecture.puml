@@ -1,0 +1,81 @@
+@startuml
+
+skin rose
+skinparam package {
+    BackgroundColor white
+}
+skinparam componentStyle rectangle
+skinparam backgroundColor white
+skinparam defaultTextAlignment center
+
+title "Rennes Metropole - Search Engine Indexer Architecture"
+
+' Components
+package "Indexation Script" {
+  component "<$php>\nindex.php" as IndexPHP
+  component "<$php>\nIndexation.php" as IndexationClass
+  component "<$cogs>\nDependencies" as Dependencies {
+    component "GuzzleHttp" as Guzzle
+    component "Spatie\nYamlFrontMatter" as YamlFrontMatter
+    component "Symfony\nYaml" as SymfonyYaml
+    component "Symfony\nDotenv" as SymfonyDotenv
+  }
+  
+  note right of Dependencies
+    - GuzzleHttp: HTTP client for API requests
+    - YamlFrontMatter: Parse YAML front matter from HTML
+    - Symfony Yaml: Parse YAML configuration
+    - Symfony Dotenv: Load environment variables
+  end note
+}
+
+' External components
+component "<$file>\nOsuny Content\n(HTML with YAML front matter)" as OsunyContent
+component "<$server>\nSymfony Hub API" as SymfonyHubAPI
+database "<$database>\nElasticsearch" as Elasticsearch
+
+' Configuration and Environment
+component "Configuration" as Config {
+  file ".env" as EnvFile
+  file "config.yaml" as ConfigFile
+}
+
+note right of EnvFile
+  Environment Variables:
+  - API_URL: Symfony Hub API endpoint
+  - API_KEY: Authentication key
+  - CONTENT_DIR: Path to Osuny content
+end note
+
+' Relationships and data flow
+IndexPHP --> IndexationClass : instantiates and runs
+IndexationClass --> OsunyContent : reads and parses
+IndexationClass --> Config : loads configuration
+IndexationClass --> Dependencies : uses
+IndexationClass --> SymfonyHubAPI : sends indexed documents
+SymfonyHubAPI --> Elasticsearch : stores in search index
+
+' API Details
+note bottom of SymfonyHubAPI
+  API Endpoint: search/index/{website_id}
+  Method: POST
+  Authentication: X-api-key header
+  Content-Type: application/json
+  Payload: Array of document objects
+end note
+
+' Document Structure
+note bottom of IndexationClass
+  Document Structure:
+  {
+    "sourceId": string,
+    "sourceUrl": string,
+    "title": string,
+    "identifier": string,
+    "summary": string,
+    "body": string,
+    "category": string
+  }
+end note
+
+@enduml

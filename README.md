@@ -6,7 +6,31 @@ Frontmatter content via a Github action.
 
 ## Project technologies
 
-* PHP 8.3
+* Composer 2 - Dependency management
+* Symfony Hub API (External API integration)
+* DDEV - Local development environment
+
+## Dependencies
+
+| Package                  | Version | Description                                      |
+|--------------------------|---------|--------------------------------------------------|
+| guzzlehttp/guzzle        | 7.9.2   | PHP HTTP client library                          |
+| symfony/dotenv           | 7.2.0   | Registers environment variables from a .env file |
+| spatie/yaml-front-matter | 2.1.0   | A to the point yaml front matter parser          |
+
+## Server requirements
+
+* PHP 8.3 - Core programming language
+* NGINX - Web server (via DDEV)
+
+## Architecture
+
+The project architecture is documented in a PlantUML diagram located in the `doc/architecture.puml` file. This diagram
+shows the main components of the application, their relationships, and the API interactions.
+
+```plantuml
+:::include{file=doc/architecture.puml}
+```
 
 ## Local development requirements
 
