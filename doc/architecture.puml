@@ -1,0 +1,75 @@
+@startuml
+
+skin rose
+
+skinparam package {
+    BackgroundColor white
+}
+
+skinparam componentStyle rectangle
+skinparam backgroundColor white
+skinparam defaultTextAlignment center
+
+title "Rennes Metropole - Search Engine Indexer Architecture"
+
+' Components
+package "Indexation Script" {
+  component "index.php" as IndexPHP
+  component "Indexation.php" as IndexationClass
+
+  file ".env" as EnvFile
+
+  note top of EnvFile
+    Environment Variables:
+    - API_URL: Symfony Hub API endpoint
+    - API_KEY: Authentication key
+    - CONTENT_DIR: Path to Osuny content
+  end note
+
+
+  ' Document Structure
+  note left of IndexationClass
+    Document Structure:
+    {
+      "sourceId": string,
+      "sourceUrl": string,
+      "title": string,
+      "identifier": string,
+      "summary": string,
+      "body": string,
+      "category": string
+    }
+  end note
+}
+
+package "Osuny Hugo project sources" {
+    component "Osuny Content\n(HTML files\nwith YAML front matter)" as OsunyContent
+
+    file "Osuny config.yaml" as ConfigFile
+}
+
+cloud "External components" {
+    component "Symfony Hub API" as SymfonyHubAPI
+    database "Elasticsearch" as Elasticsearch
+
+    ' API Details
+    note left of SymfonyHubAPI
+      API Endpoint: search/index/{website_id}
+      Method: POST
+      Authentication: X-api-key header
+      Content-Type: application/json
+      Payload: Array of document objects
+    end note
+}
+
+' Relationships and data flow
+IndexPHP --> IndexationClass : instantiates and runs
+IndexationClass --> OsunyContent : reads and parses
+IndexPHP -> EnvFile : loads configuration
+IndexationClass --> ConfigFile : read project configuration
+IndexationClass ---> SymfonyHubAPI : sends indexed documents
+SymfonyHubAPI --> Elasticsearch : stores in search index
+
+
+
+@enduml
