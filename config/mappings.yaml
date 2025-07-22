@@ -1,0 +1,23 @@
+thematic_mappings:
+  '9c7ea9c0-669a-46e0-923f-1fa984b0c5c1':
+    name: 'Rennes Ville et Métropole'
+  '35a9334e-ad72-41cc-93ca-bfb9cbf2b1aa':
+    name: 'Aides, solidarités, égalité'
+  '0f740ae5-3934-4fe5-894d-b93bded6c97a':
+    name: 'Culture et sports'
+  'fefb970e-d419-4a9d-9607-4cef54947839':
+    name: 'Déchets et propreté'
+  'a486b5f7-a154-4eff-a093-60a9ed3a5bda':
+    name: 'Démarches administratives'
+  '6662d9b8-a265-4bcd-831e-166a528947e7':
+    name: 'Economie et emploi'
+  'fdf9bf04-579a-4797-a7b1-b10a543f6287':
+    name: 'Enfance, éducation, jeunesse'
+  'e802f2bd-b181-4483-b89b-91a1dc1617d3':
+    name: 'Logement et urbanisme'
+  '48ffbc16-6dbc-4184-9067-65f813f24852':
+    name: 'Numérique et recherche'
+  '0b570073-cf8f-4c6e-9e09-b3f2d95cc1d6':
+    name: 'Santé et environnement'
+  '9f9fc305-9efe-47d7-a971-7ed7c9d6a007':
+    name: 'Transports et circulation'

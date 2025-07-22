@@ -5,7 +5,8 @@
     "php": ">=8.3",
     "guzzlehttp/guzzle": "^7.9",
     "spatie/yaml-front-matter": "^2.1",
-    "ext-json": "*"
+    "ext-json": "*",
+    "symfony/dotenv": "^7.3"
   },
   "autoload": {
     "psr-4": {

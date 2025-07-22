@@ -52,6 +52,37 @@ The `index.php` script needs the following environments variables in order to ru
 
 * `API_URL`: API endpoint of Symfony Hub application
 * `API_KEY`: API key in order to authenticate to Symfony Hub application
-* `CONTENT_DIR`: Project directory containing Osuny pages data
 
+## Configuration
+
+In all your website your need to setup `config/_default/indexer.yaml` with content like that:
+
+```yml
+content_dirs:
+  - /content/fr/pages
+exclude_dirs:
+  - /content/fr/pages/art-dans-la-ville
+has_thematic: true
+taxonomies:
+  - name: 'Rubrique'
+    field_name: 'category'
+    
+# Example "ici" index
+#has_thematic: false
+#taxonomies:
+#  - name: Catégories
+#    field_name: 'category'
+#  - name: Formats:
+#    field_name: 'format'
+
+# Example "app" index
+#has_thematic: true
+#taxonomies:
+#  - name: Rubrique:
+#    field_name: 'category'
+```
+
+## Mappings
+
+The file `config/mapping.yaml` contains mappings of website with label associated.
 
