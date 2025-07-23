@@ -21,3 +21,6 @@ thematic_mappings:
     name: 'Santé et environnement'
   '9f9fc305-9efe-47d7-a971-7ed7c9d6a007':
     name: 'Transports et circulation'
+
+index_mappings:
+  ici_rennes: '011ffa0b-900d-4435-aeed-e623840b4000'

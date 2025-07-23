@@ -54,7 +54,8 @@ class Indexation
         }
 
         try {
-            $response = $this->client->post('/api/v1/search/index/' . $this->config['osuny']['website']['id'], [
+            $index = $this->config['osuny']['website']['id'] === $this->mapping['index_mappings']['ici_rennes'] ? 'ici' : 'app';
+            $response = $this->client->post('/api/v1/search/index/'. $index . '/' . $this->config['osuny']['website']['id'], [
                 RequestOptions::HEADERS => $this->header,
                 RequestOptions::BODY => json_encode($documents),
             ]);
