@@ -73,12 +73,16 @@ class Indexation
     {
         $documents = [];
         $projectRoot = getcwd();
+        $excludeDirs = $this->indexConfig['exclude_dirs'] ?? [];
+        $configTaxonomies = $this->indexConfig['taxonomies'] ?? [];
+        $hasTaxonomy = $this->indexConfig['has_thematic'] ?? false;
+
         foreach ($this->indexConfig['content_dirs'] as $contentDir) {
             $data = $this->getData($projectRoot . $contentDir);
 
             /** @var Document $item */
             foreach ($data as $key => $item) {
-                if (!$this->str_contains_any($key, $this->indexConfig['exclude_dirs'])) {
+                if (!$this->str_contains_any($key, $excludeDirs)) {
                     $search = $item->matter('search');
                     $taxonomies = $item->matter('taxonomies');
 
@@ -91,7 +95,7 @@ class Indexation
                     ];
 
                     if (!empty($taxonomies)) {
-                        foreach ($this->indexConfig['taxonomies'] as $taxonomyNeeded) {
+                        foreach ($configTaxonomies as $taxonomyNeeded) {
                             foreach ($taxonomies as $taxonomy) {
                                 if (!empty($taxonomy['categories']) && $taxonomy['name'] === $taxonomyNeeded['name']) {
                                     $document[$taxonomyNeeded['field_name']] = ucfirst($taxonomy['categories'][0]['name']);
@@ -100,7 +104,7 @@ class Indexation
                         }
                     }
 
-                    if ($this->indexConfig['has_thematic'] && isset($this->mapping['thematic_mappings'][$this->config['osuny']['website']['id']])) {
+                    if ($hasTaxonomy && isset($this->mapping['thematic_mappings'][$this->config['osuny']['website']['id']])) {
                         $document['thematic'] = $this->mapping['thematic_mappings'][$this->config['osuny']['website']['id']]['name'];
                     }
 
