@@ -24,15 +24,18 @@ class Indexation
         $apiUrl = $_ENV['API_URL'] ?? null;
         $apiKey = $_ENV['API_KEY'] ?? null;
         $apiBasicAuth = $_ENV['API_BASIC_AUTH'] ?: null;
+        $appEnv = $_ENV['APP_ENV'] ?? 'dev';
 
         if (!$apiUrl || !$apiKey) {
             die("❌ Error: One or more environment variables are missing.\n");
         }
 
         $projectRoot = getcwd();
+        $mappingFile = $projectRoot . '/modules/search-engine-indexer/config/mappings' .
+            ($appEnv === 'production' ? '.production' : '') . '.yaml';
         $this->config = Yaml::parseFile($projectRoot . '/config/production/config.yaml');
         $this->indexConfig = Yaml::parseFile($projectRoot . '/config/_default/indexer.yaml');
-        $this->mapping = Yaml::parseFile($projectRoot .'/modules/search-engine-indexer/config/mappings.yaml');
+        $this->mapping = Yaml::parseFile($mappingFile);
 
         $this->client = new Client([
             'base_uri' => $apiUrl
