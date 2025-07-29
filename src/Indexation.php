@@ -79,7 +79,7 @@ class Indexation
         $projectRoot = getcwd();
         $excludeDirs = $this->indexConfig['exclude_dirs'] ?? [];
         $configTaxonomies = $this->indexConfig['taxonomies'] ?? [];
-        $hasTaxonomy = $this->indexConfig['has_thematic'] ?? false;
+        $hasThematic = $this->indexConfig['has_thematic'] ?? false;
 
         foreach ($this->indexConfig['content_dirs'] as $contentDir) {
             $data = $this->getData($projectRoot . $contentDir);
@@ -108,7 +108,7 @@ class Indexation
                         }
                     }
 
-                    if ($hasTaxonomy && isset($this->mapping['thematic_mappings'][$this->config['osuny']['website']['id']])) {
+                    if ($hasThematic && isset($this->mapping['thematic_mappings'][$this->config['osuny']['website']['id']])) {
                         $document['thematic'] = $this->mapping['thematic_mappings'][$this->config['osuny']['website']['id']]['name'];
                     }
 
