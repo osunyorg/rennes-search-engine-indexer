@@ -57,8 +57,13 @@ class Indexation
         }
 
         try {
-            $index = $this->config['osuny']['website']['id'] === $this->mapping['index_mappings']['ici_rennes'] ? 'ici' : 'app';
-            $response = $this->client->post('/api/v1/search/index/'. $index . '/' . $this->config['osuny']['website']['id'], [
+            $indexName = $this->config['osuny']['website']['id'] === $this->mapping['index_mappings']['ici_rennes'] ? 'ici' : 'app';
+
+            if ($indexName !== 'ici' && $indexName !== 'app') {
+                throw new \LogicException('Invalid index: '.var_export($indexName, true));
+            }
+
+            $response = $this->client->post('/api/v1/search/index/'. $indexName . '/' . $this->config['osuny']['website']['id'], [
                 RequestOptions::HEADERS => $this->header,
                 RequestOptions::BODY => json_encode($documents),
             ]);
