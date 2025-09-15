@@ -31,7 +31,7 @@ class Indexation
         }
 
         $projectRoot = getcwd();
-        $mappingFile = $projectRoot . '/modules/search-engine-indexer/config/mappings' .
+        $mappingFile = dirname(__DIR__) . '/config/mappings' .
             ($appEnv === 'production' || $appEnv === 'staging' ? '.production' : '') . '.yaml';
         $this->config = Yaml::parseFile($projectRoot . '/config/production/config.yaml');
         $this->indexConfig = Yaml::parseFile($projectRoot . '/config/_default/indexer.yaml');
