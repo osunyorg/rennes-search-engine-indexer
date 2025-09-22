@@ -13,21 +13,30 @@ class Indexation
     protected Client $client;
 
     protected array $config;
+    protected array $indexConfig;
+
+    protected array $mapping;
 
     protected array $header;
 
     public function __construct()
     {
-        $apiUrl = getenv('API_URL');
-        $apiKey = getenv('API_KEY');
-        $apiBasicAuth = getenv('API_BASIC_AUTH') ?: null;
+        $apiUrl = $_ENV['API_URL'] ?? null;
+        $apiKey = $_ENV['API_KEY'] ?? null;
+        $apiBasicAuth = $_ENV['API_BASIC_AUTH'] ?: null;
+        $appEnv = $_ENV['APP_ENV'] ?? 'dev';
 
-        if (!$apiUrl || !$apiKey ) {
+        if (!$apiUrl || !$apiKey) {
             die("❌ Error: One or more environment variables are missing.\n");
         }
 
         $projectRoot = getcwd();
+        $mappingFile = dirname(__DIR__) . '/config/mappings' .
+            ($appEnv === 'production' || $appEnv === 'staging' ? '.production' : '') . '.yaml';
         $this->config = Yaml::parseFile($projectRoot . '/config/production/config.yaml');
+        $this->indexConfig = Yaml::parseFile($projectRoot . '/config/_default/indexer.yaml');
+        $this->mapping = Yaml::parseFile($mappingFile);
+
         $this->client = new Client([
             'base_uri' => $apiUrl
         ]);
@@ -48,7 +57,8 @@ class Indexation
         }
 
         try {
-            $response = $this->client->post('/api/v1/search/index/' . $this->config['osuny']['website']['id'], [
+            $index = $this->config['osuny']['website']['id'] === $this->mapping['index_mappings']['ici_rennes'] ? 'ici' : 'app';
+            $response = $this->client->post('/api/v1/search/index/'. $index . '/' . $this->config['osuny']['website']['id'], [
                 RequestOptions::HEADERS => $this->header,
                 RequestOptions::BODY => json_encode($documents),
             ]);
@@ -67,31 +77,47 @@ class Indexation
     {
         $documents = [];
         $projectRoot = getcwd();
-        $data = $this->getData($projectRoot . '/content/fr/pages');
+        $excludeDirs = $this->indexConfig['exclude_dirs'] ?? [];
+        $configTaxonomies = $this->indexConfig['taxonomies'] ?? [];
+        $hasThematic = $this->indexConfig['has_thematic'] ?? false;
 
-        /** @var Document $item */
-        foreach ($data as $item) {
-            $search = $item->matter('search');
-            $taxonomies = $item->matter('taxonomies');
-            $category = '';
-            if (!empty($taxonomies)) {
-                foreach ($taxonomies as $taxonomy) {
-                    if (!empty($taxonomy['categories']) && $taxonomy['slug'] === 'rubrique') {
-                        $category = ucfirst($taxonomy['categories'][0]['name']);
+        foreach ($this->indexConfig['content_dirs'] as $contentDir) {
+            $data = $this->getData($projectRoot . $contentDir);
+
+            /** @var Document $item */
+            foreach ($data as $key => $item) {
+                if (!$this->str_contains_any($key, $excludeDirs)) {
+                    $search = $item->matter('search');
+                    $taxonomies = $item->matter('taxonomies');
+
+                    $document = [
+                        'sourceUrl' => $this->config['baseURL'] . $search['url'],
+                        'title' => $search['title'],
+                        'identifier' => $search['about_id'],
+                        'summary' => strip_tags($search['summary']),
+                        'body' => strip_tags($search['body']),
+                    ];
+
+                    if (!empty($taxonomies)) {
+                        foreach ($configTaxonomies as $taxonomyNeeded) {
+                            foreach ($taxonomies as $taxonomy) {
+                                if (!empty($taxonomy['categories']) && $taxonomy['name'] === $taxonomyNeeded['name']) {
+                                    $document[$taxonomyNeeded['field_name']] = ucfirst($taxonomy['categories'][0]['name']);
+                                }
+                            }
+                        }
                     }
+
+                    if ($hasThematic && isset($this->mapping['thematic_mappings'][$this->config['osuny']['website']['id']])) {
+                        $document['thematic'] = $this->mapping['thematic_mappings'][$this->config['osuny']['website']['id']]['name'];
+                    }
+
+                    $documents[] = $document;
+                    echo "✅ Indexing document: {$search['title']} ({$search['about_id']})\n";
+                } else {
+                    echo "⚠️ Document " . $key . " was ignored by configuration.\n";
                 }
             }
-
-            $documents[] = [
-                'sourceId' => $search['about_id'],
-                'sourceUrl' => $this->config['baseURL'] . $search['url'],
-                'title' => $search['title'],
-                'identifier' => $search['about_id'],
-                'summary' => strip_tags($search['summary']),
-                'body' => strip_tags($search['body']),
-                'category' => $category,
-            ];
-            echo "Indexing document: {$search['title']} ({$search['about_id']})\n";
         }
 
         return $documents;
@@ -112,12 +138,17 @@ class Indexation
                     $file_content = file_get_contents($path);
                     $data = YamlFrontMatter::parse($file_content);
 
-                    $content[] = $data;
+                    $content[$path] = $data;
                 }
             }
         }
 
         return $content;
+    }
+
+    public function str_contains_any(string $haystack, array $needles): bool
+    {
+        return array_reduce($needles, fn($a, $n) => $a || str_contains($haystack, $n), false);
     }
 }
 
