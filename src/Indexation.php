@@ -51,27 +51,43 @@ class Indexation
     {
         $documents = $this->getDocuments();
         $totalDocs = count($documents);
+
         if (0 === $totalDocs) {
             echo "⚠️ No documents to index.\n";
             return;
         }
 
         try {
-            $indexName = $this->config['osuny']['website']['id'] === $this->mapping['index_mappings']['ici_rennes'] ? 'ici' : 'app';
+            $websiteId = $this->config['osuny']['website']['id'];
+            $indexMappings = $this->mapping['index_mappings'] ?? [];
 
-            if ($indexName !== 'ici' && $indexName !== 'app') {
-                throw new \LogicException('Invalid index: '.var_export($indexName, true));
+            $indexName = null;
+
+            foreach ($indexMappings as $candidateIndexName => $websiteIds) {
+                $websiteIds = is_array($websiteIds) ? $websiteIds : [$websiteIds];
+
+                if (in_array($websiteId, $websiteIds, true)) {
+                    $indexName = $candidateIndexName;
+                    break;
+                }
             }
 
-            $response = $this->client->post('/api/v1/search/index/'. $indexName . '/' . $this->config['osuny']['website']['id'], [
+            if ($indexName === null) {
+                throw new \LogicException(
+                    'No index mapping found for website id: ' . var_export($websiteId, true)
+                );
+            }
+
+            $response = $this->client->post('/api/v1/search/index/' . $indexName . '/' . $websiteId, [
                 RequestOptions::HEADERS => $this->header,
                 RequestOptions::BODY => json_encode($documents),
             ]);
 
-            echo "✅ Success: code {$response->getStatusCode()} ! Total of {$totalDocs} documents indexed". "\n";
+            echo "✅ Success: code {$response->getStatusCode()} ! Total of {$totalDocs} documents indexed\n";
 
         } catch (RequestException $e) {
             echo '❌ Error while indexing: ' . $e->getMessage() . "\n";
+
             if ($e->hasResponse()) {
                 echo '📡 API Response : ' . $e->getResponse()->getBody() . "\n";
             }
