@@ -115,8 +115,8 @@ class Indexation
                         'sourceUrl' => $this->config['baseURL'] . $search['url'],
                         'title' => $search['title'],
                         'identifier' => $search['about_id'],
-                        'summary' => strip_tags($search['summary']),
-                        'body' => strip_tags($search['body']),
+                        'summary' => strip_tags($search['summary'] ?? ''),
+                        'body' => strip_tags($search['body'] ?? ''),
                     ];
 
                     if (!empty($taxonomies)) {
